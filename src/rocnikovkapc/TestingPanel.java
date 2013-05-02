@@ -16,6 +16,7 @@ import lejos.robotics.mapping.MenuAction;
 import lejos.robotics.mapping.NavigationModel;
 import lejos.robotics.mapping.NavigationPanel;
 import lejos.robotics.mapping.SliderPanel;
+import lejos.robotics.navigation.Waypoint;
 
 /**
  *
