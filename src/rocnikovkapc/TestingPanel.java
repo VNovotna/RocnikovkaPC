@@ -16,7 +16,7 @@ import lejos.robotics.mapping.MenuAction;
 import lejos.robotics.mapping.NavigationModel;
 import lejos.robotics.mapping.NavigationPanel;
 import lejos.robotics.mapping.SliderPanel;
-import lejos.robotics.navigation.Waypoint;
+import lejos.util.PilotProps;
 
 /**
  *
@@ -36,8 +36,16 @@ public class TestingPanel extends NavigationPanel {
     private JScrollPane log = new JScrollPane(logArea);
     private JButton clearButton = new JButton("Clear log");
     private SliderPanel setHeading, rotate, travelSpeed, rotateSpeed;
+    private static SpiralWayGenerator spiralWG;
 
     public static void main(String[] args) throws IOException {
+        PilotProps pp = new PilotProps();
+        try {
+            pp.loadPersistentValues();
+        } catch (IOException ioe) {
+            System.exit(1);
+        }
+        spiralWG = new SpiralWayGenerator(Long.parseLong(pp.getProperty(PilotProps.KEY_TRACKWIDTH)), 100, 1000, 1000);
         (new TestingPanel()).run();
     }
 
