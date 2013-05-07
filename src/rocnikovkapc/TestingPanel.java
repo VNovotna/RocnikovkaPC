@@ -16,6 +16,8 @@ import lejos.robotics.mapping.MenuAction;
 import lejos.robotics.mapping.NavigationModel;
 import lejos.robotics.mapping.NavigationPanel;
 import lejos.robotics.mapping.SliderPanel;
+import lejos.robotics.navigation.Waypoint;
+import lejos.robotics.pathfinding.Path;
 import lejos.util.PilotProps;
 
 /**
@@ -45,7 +47,7 @@ public class TestingPanel extends NavigationPanel {
         } catch (IOException ioe) {
             System.exit(1);
         }
-        spiralWG = new SpiralWayGenerator(Long.parseLong(pp.getProperty(PilotProps.KEY_TRACKWIDTH)), 100, 1000, 1000);
+        spiralWG = new SpiralWayGenerator(112, 100, 1000, 1000);
         (new TestingPanel()).run();
     }
 
@@ -147,15 +149,15 @@ public class TestingPanel extends NavigationPanel {
     @Override
     public void eventReceived(NavigationModel.NavEvent navEvent) {
         super.eventReceived(navEvent);
-//        System.out.println(navEvent.name());
-//        if (navEvent == NavigationModel.NavEvent.SET_POSE) {
-//            int heading = (int) model.getRobotPose().getHeading();
-//            if (heading < 0) {
-//                heading += 360;
-//            }
-//            rotate.setValue(heading);
-//            setHeading.setValue(heading);
-//        }
+        System.out.println(navEvent.name());
+        if(navEvent == NavigationModel.NavEvent.PATH_COMPLETE){
+            Path cesta = model.getPath();
+            System.out.println(cesta.size());
+            for (Waypoint wp : cesta) {
+                System.out.println(wp.x + " | " + wp.y);
+            }
+            model.addWaypoint(spiralWG.generateNextWaypoint(model.getRobotPose().getHeading(), new Waypoint(model.getRobotPose())));
+        }
     }
 
     @Override

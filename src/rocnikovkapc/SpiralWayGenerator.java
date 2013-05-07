@@ -86,4 +86,9 @@ public class SpiralWayGenerator {
         long x = (long) Math.max(limit, actual.x - STEP_LENGTH);
         return new Waypoint(x, actual.y);
     }
+    
+    //nebo by možná bylo ještě lepší (float heading, int x, int y){
+    Waypoint generateNextWaypoint(float heading, Waypoint waypoint) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
