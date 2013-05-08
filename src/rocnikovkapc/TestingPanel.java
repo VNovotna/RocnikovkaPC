@@ -150,13 +150,10 @@ public class TestingPanel extends NavigationPanel {
     public void eventReceived(NavigationModel.NavEvent navEvent) {
         super.eventReceived(navEvent);
         System.out.println(navEvent.name());
-        if(navEvent == NavigationModel.NavEvent.PATH_COMPLETE){
-            Path cesta = model.getPath();
-            System.out.println(cesta.size());
-            for (Waypoint wp : cesta) {
-                System.out.println(wp.x + " | " + wp.y);
-            }
-            model.addWaypoint(spiralWG.gnw(new Waypoint(model.getRobotPose())));
+        if(navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED){
+            model.goTo(spiralWG.gnw(new Waypoint(model.getRobotPose())));
+//            model.calculatePath();
+//            model.followPath();
         }
     }
 
