@@ -6,6 +6,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
@@ -16,7 +17,11 @@ import lejos.robotics.mapping.MenuAction;
 import lejos.robotics.mapping.NavigationModel;
 import lejos.robotics.mapping.NavigationPanel;
 import lejos.robotics.mapping.SliderPanel;
+import lejos.robotics.navigation.Move;
 import lejos.robotics.navigation.Waypoint;
+import lejos.robotics.objectdetection.Feature;
+import lejos.robotics.objectdetection.FeatureDetector;
+import lejos.robotics.objectdetection.FeatureListener;
 import lejos.robotics.pathfinding.Path;
 import lejos.util.PilotProps;
 
@@ -38,7 +43,7 @@ public class TestingPanel extends NavigationPanel {
     private JScrollPane log = new JScrollPane(logArea);
     private JButton clearButton = new JButton("Clear log");
     private SliderPanel setHeading, rotate, travelSpeed, rotateSpeed;
-    private static WayGenerator spiralWG;
+    private static WayGenerator wayGenerator;
 
     public static void main(String[] args) throws IOException {
         PilotProps pp = new PilotProps();
@@ -47,7 +52,7 @@ public class TestingPanel extends NavigationPanel {
         } catch (IOException ioe) {
             System.exit(1);
         }
-        spiralWG = new WayGenerator(112, 100, 1000, 1000);
+        wayGenerator = new WayGenerator(112, 100, 1000, 1000);
         (new TestingPanel()).run();
     }
 
@@ -95,7 +100,7 @@ public class TestingPanel extends NavigationPanel {
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                model.stop();
+                model.clearPath();
             }
         });
 
@@ -150,16 +155,20 @@ public class TestingPanel extends NavigationPanel {
     public void eventReceived(NavigationModel.NavEvent navEvent) {
         super.eventReceived(navEvent);
         System.out.println(navEvent.name());
-        if(navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED){
-            model.goTo(spiralWG.gnw(new Waypoint(model.getRobotPose())));
-//            model.calculatePath();
-//            model.followPath();
+        if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
+            model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
+        }
+        if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
+            ArrayList<lejos.geom.Point> features = model.getFeatures();
+            for (lejos.geom.Point point : features) {
+                System.out.println(point.x + " | " + point.y);
+            }
         }
     }
 
     @Override
     public void whenConnected() {
         super.whenConnected();
-//        model.setPose(model.getRobotPose());
+        model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
 }
