@@ -17,6 +17,7 @@ import lejos.robotics.mapping.MenuAction;
 import lejos.robotics.mapping.NavigationModel;
 import lejos.robotics.mapping.NavigationPanel;
 import lejos.robotics.mapping.SliderPanel;
+import lejos.robotics.navigation.Pose;
 import lejos.robotics.navigation.Waypoint;
 import lejos.util.PilotProps;
 
@@ -47,7 +48,7 @@ public class TestingPanel extends NavigationPanel {
         } catch (IOException ioe) {
             System.exit(1);
         }
-        wayGenerator = new WayGenerator(112, 100, 1000, 1000);
+        wayGenerator = new WayGenerator(160, 100, 100, 100);
         (new TestingPanel()).run();
     }
 
@@ -164,6 +165,7 @@ public class TestingPanel extends NavigationPanel {
     @Override
     public void whenConnected() {
         super.whenConnected();
+        model.setPose(new Pose(80, 80, 0));
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
 }
