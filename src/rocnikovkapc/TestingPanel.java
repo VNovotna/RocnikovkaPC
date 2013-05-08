@@ -32,8 +32,8 @@ public class TestingPanel extends NavigationPanel {
     private static final Dimension MAP_SIZE = new Dimension(700, 600);
     private static final Point INITIAL_VIEW_START = new Point(0, -10);
     private static final int INITIAL_ZOOM = 110;
-    private JButton calculateButton = new JButton("Calculate path");
-    private JButton followButton = new JButton("Follow Path");
+//    private JButton calculateButton = new JButton("Calculate path");
+//    private JButton followButton = new JButton("Follow Path");
     private JButton stopButton = new JButton("nigga halt!");
     private JTextArea logArea = new JTextArea("Tady běží logování \n", 35, 35);
     private JScrollPane log = new JScrollPane(logArea);
@@ -48,7 +48,7 @@ public class TestingPanel extends NavigationPanel {
         } catch (IOException ioe) {
             System.exit(1);
         }
-        wayGenerator = new WayGenerator(160, 100, 100, 100);
+        wayGenerator = new WayGenerator(16, 25, 200, 100);
         (new TestingPanel()).run();
     }
 
@@ -79,20 +79,20 @@ public class TestingPanel extends NavigationPanel {
         //Display mesh
         showMesh = true;
 
-        calculateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                model.calculatePath();
-                followButton.setEnabled(true);
-            }
-        });
-
-        followButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                model.followPath();
-            }
-        });
+//        calculateButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent event) {
+//                model.calculatePath();
+//                followButton.setEnabled(true);
+//            }
+//        });
+//
+//        followButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent event) {
+//                model.followPath();
+//            }
+//        });
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -107,16 +107,16 @@ public class TestingPanel extends NavigationPanel {
             }
         });
 
-        followButton.setEnabled(false);
-        //Add calculate and follow buttons 
-        commandPanel.add(calculateButton);
-        commandPanel.add(followButton);
+//        followButton.setEnabled(false);
+//        //Add calculate and follow buttons 
+//        commandPanel.add(calculateButton);
+//        commandPanel.add(followButton);
         commandPanel.add(stopButton);
 
         //Display mesh
         showMesh = true;
 
-        followButton.setEnabled(false);
+//        followButton.setEnabled(false);
 
         log.setBorder(BorderFactory.createTitledBorder("Log"));
         logPanel.add(log);
@@ -152,7 +152,9 @@ public class TestingPanel extends NavigationPanel {
         super.eventReceived(navEvent);
         System.out.println(navEvent.name());
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
-            model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
+            Waypoint wp = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
+            //model.addWaypoint(wp);
+            model.goTo(wp);
         }
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
             ArrayList<lejos.geom.Point> features = model.getFeatures();
@@ -162,10 +164,11 @@ public class TestingPanel extends NavigationPanel {
         }
     }
 
+
     @Override
     public void whenConnected() {
         super.whenConnected();
-        model.setPose(new Pose(80, 80, 0));
+        model.setPose(new Pose(8, 8, 0));
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
 }
