@@ -17,12 +17,7 @@ import lejos.robotics.mapping.MenuAction;
 import lejos.robotics.mapping.NavigationModel;
 import lejos.robotics.mapping.NavigationPanel;
 import lejos.robotics.mapping.SliderPanel;
-import lejos.robotics.navigation.Move;
 import lejos.robotics.navigation.Waypoint;
-import lejos.robotics.objectdetection.Feature;
-import lejos.robotics.objectdetection.FeatureDetector;
-import lejos.robotics.objectdetection.FeatureListener;
-import lejos.robotics.pathfinding.Path;
 import lejos.util.PilotProps;
 
 /**
