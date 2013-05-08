@@ -38,7 +38,7 @@ public class TestingPanel extends NavigationPanel {
     private JScrollPane log = new JScrollPane(logArea);
     private JButton clearButton = new JButton("Clear log");
     private SliderPanel setHeading, rotate, travelSpeed, rotateSpeed;
-    private static SpiralWayGenerator spiralWG;
+    private static WayGenerator spiralWG;
 
     public static void main(String[] args) throws IOException {
         PilotProps pp = new PilotProps();
@@ -47,7 +47,7 @@ public class TestingPanel extends NavigationPanel {
         } catch (IOException ioe) {
             System.exit(1);
         }
-        spiralWG = new SpiralWayGenerator(112, 100, 1000, 1000);
+        spiralWG = new WayGenerator(112, 100, 1000, 1000);
         (new TestingPanel()).run();
     }
 
@@ -156,7 +156,7 @@ public class TestingPanel extends NavigationPanel {
             for (Waypoint wp : cesta) {
                 System.out.println(wp.x + " | " + wp.y);
             }
-            model.addWaypoint(spiralWG.generateNextWaypoint(model.getRobotPose().getHeading(), new Waypoint(model.getRobotPose())));
+            model.addWaypoint(spiralWG.gnw(new Waypoint(model.getRobotPose())));
         }
     }
 
