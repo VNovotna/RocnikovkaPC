@@ -40,6 +40,11 @@ public class TestingPanel extends NavigationPanel {
     private JButton clearButton = new JButton("Clear log");
     private SliderPanel setHeading, rotate, travelSpeed, rotateSpeed;
     private static WayGenerator wayGenerator;
+    private static final long TRACK_WIDTH = 16; //sirka kol robota
+    private static final long STEP_LENGTH = 16; //vlastne presnost mereni
+    private static final long XRANGE = 64;
+    private static final long YRANGE = 48;  //velikost mapovane oblasti
+    private boolean objizdeni = false;
 
     public static void main(String[] args) throws IOException {
         PilotProps pp = new PilotProps();
@@ -48,7 +53,7 @@ public class TestingPanel extends NavigationPanel {
         } catch (IOException ioe) {
             System.exit(1);
         }
-        wayGenerator = new WayGenerator(16, 25, 200, 100);
+        wayGenerator = new WayGenerator(TRACK_WIDTH, STEP_LENGTH, XRANGE, YRANGE);
         (new TestingPanel()).run();
     }
 
@@ -65,6 +70,7 @@ public class TestingPanel extends NavigationPanel {
         showLastMovePanel = true;
         showParticlePanel = false;
         showConnectPanel = false;
+        showStatusPanel = true;
         showMoves = true;
         showZoomLabels = true;
         initialViewStart = INITIAL_VIEW_START;
@@ -149,26 +155,43 @@ public class TestingPanel extends NavigationPanel {
 
     @Override
     public void eventReceived(NavigationModel.NavEvent navEvent) {
+//        System.out.println(objizdeni);
         super.eventReceived(navEvent);
-        System.out.println(navEvent.name());
+//        System.out.println(navEvent.name());
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
-            Waypoint wp = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
-            //model.addWaypoint(wp);
-            model.goTo(wp);
+//            model.clearPath();
+            Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
+//            Waypoint secondNextWP = wayGenerator.gnw(nextWP);
+//            model.addWaypoint(nextWP);
+            model.goTo(nextWP);
         }
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
             ArrayList<lejos.geom.Point> features = model.getFeatures();
             for (lejos.geom.Point point : features) {
-                System.out.println(point.x + " | " + point.y);
+                float x = point.x;
+                float y = point.y;
+                System.out.println("prekazka: " + x + " | " + y);
+                Pose pozice = model.getRobotPose();
+                System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
+                System.out.println("---");
+                
+                //zjistit kdy jsem moc blízko a objet prekazku
+//                if (y + TRACK_WIDTH > model.getRobotPose().getY()) {
+//                    System.out.println("Musim objet nahoru " + y +" + "+ TRACK_WIDTH +" > "+model.getRobotPose().getY());
+//                    objizdeni = true;
+//                }
+//                if (y - TRACK_WIDTH > model.getRobotPose().getY()) {
+//                    System.out.println("Musim objet dolu ");
+//                    objizdeni = true;
+//                }
             }
         }
     }
 
-
     @Override
     public void whenConnected() {
         super.whenConnected();
-        model.setPose(new Pose(8, 8, 0));
+        model.setPose(new Pose(TRACK_WIDTH / 2, TRACK_WIDTH / 2, 0)); // proste tak musi zacinat 
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
 }
