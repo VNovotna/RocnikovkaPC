@@ -32,8 +32,6 @@ public class TestingPanel extends NavigationPanel {
     private static final Dimension MAP_SIZE = new Dimension(700, 600);
     private static final Point INITIAL_VIEW_START = new Point(0, -10);
     private static final int INITIAL_ZOOM = 110;
-//    private JButton calculateButton = new JButton("Calculate path");
-//    private JButton followButton = new JButton("Follow Path");
     private JButton stopButton = new JButton("nigga halt!");
     private JTextArea logArea = new JTextArea("Tady běží logování \n", 35, 35);
     private JScrollPane log = new JScrollPane(logArea);
@@ -87,20 +85,6 @@ public class TestingPanel extends NavigationPanel {
         //Display mesh
         showMesh = true;
 
-//        calculateButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent event) {
-//                model.calculatePath();
-//                followButton.setEnabled(true);
-//            }
-//        });
-//
-//        followButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent event) {
-//                model.followPath();
-//            }
-//        });
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -115,16 +99,10 @@ public class TestingPanel extends NavigationPanel {
             }
         });
 
-//        followButton.setEnabled(false);
-//        //Add calculate and follow buttons 
-//        commandPanel.add(calculateButton);
-//        commandPanel.add(followButton);
         commandPanel.add(stopButton);
 
         //Display mesh
         showMesh = true;
-
-//        followButton.setEnabled(false);
 
         log.setBorder(BorderFactory.createTitledBorder("Log"));
         logPanel.add(log);
@@ -158,12 +136,18 @@ public class TestingPanel extends NavigationPanel {
     @Override
     public void eventReceived(NavigationModel.NavEvent navEvent) {
         super.eventReceived(navEvent);
-        
+
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
-            Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
-            model.goTo(nextWP);
+            if (!objizdeni) {
+                Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
+                model.goTo(nextWP);
+            } else { //objizdim ale u nemam prekazku pred 
+                ArrayList<lejos.geom.Point> features = model.getFeatures();
+                
+                obstacleAv.avoidF2(features.get(features.size()), model.getRobotPose());
+            }
         }
-        
+
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
             ArrayList<lejos.geom.Point> features = model.getFeatures();
             for (lejos.geom.Point point : features) {
@@ -174,10 +158,12 @@ public class TestingPanel extends NavigationPanel {
                 System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
 
 //                zjistit kdy jsem moc blízko a objet prekazku
-                if (y > model.getRobotPose().getY() + TRACK_WIDTH || y < model.getRobotPose().getY() - TRACK_WIDTH || x > model.getRobotPose().getX() - TRACK_WIDTH) {
-                    //System.out.println("Musim objet " + y + " >< " + model.getRobotPose().getY() + " + " + TRACK_WIDTH);
-                    objizdeni = true;
-                    obstacleAv.avoid(point, model.getRobotPose());
+                if (!objizdeni) {
+                    if (y > model.getRobotPose().getY() + TRACK_WIDTH || y < model.getRobotPose().getY() - TRACK_WIDTH || x > model.getRobotPose().getX() - TRACK_WIDTH) {
+                        //System.out.println("Musim objet " + y + " >< " + model.getRobotPose().getY() + " + " + TRACK_WIDTH);
+                        objizdeni = true;
+                        obstacleAv.avoidF1(point, model.getRobotPose());
+                    }
                 }
                 System.out.println("---");
             }

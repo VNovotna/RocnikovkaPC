@@ -13,6 +13,7 @@ public class ObstacleAvoider {
     private final long STEP_LENGTH;
     private final long XRANGE;
     private final long YRANGE;
+    private int faze = 0;
 
     public ObstacleAvoider(long STEP_LENGTH, long XRANGE, long YRANGE) {
         this.STEP_LENGTH = STEP_LENGTH;
@@ -20,20 +21,26 @@ public class ObstacleAvoider {
         this.YRANGE = YRANGE;
     }
 
-    Waypoint avoid(Point obstacle, Pose originalPose) {
-        float heading = originalPose.getHeading();
+    Waypoint avoidF1(Point obstacle, Pose originalPose) {
+        float originalHeading = originalPose.getHeading();
+        float originalX = originalPose.getX();
+        float originalY = originalPose.getY();
         Pose newPose = new Pose();
-        System.out.print("heading:  " + heading);
-        if (heading > 2) {
+        System.out.print("heading:  " + originalHeading);
+        if (originalHeading > 2) {
             System.out.println(" -> nahoru");
-        }
-        else if (heading < -2) {
+            newPose.setLocation(originalX+STEP_LENGTH, originalY);
+            newPose.setHeading(90);
+        } else if (originalHeading < -2) {
             System.out.println(" -> dolu");
-        }
-        else{ //rovne
+        } else { //rovne
             System.out.println(" -> rovne");
         }
-        
+        faze++;
         return new Waypoint(newPose);
+    }
+
+    void avoidF2(Point get, Pose robotPose) {
+        //pojede nahoru a vzdycky se podiva jestli se muze vratit
     }
 }
