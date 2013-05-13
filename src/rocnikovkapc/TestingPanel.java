@@ -147,6 +147,9 @@ public class TestingPanel extends NavigationPanel {
                 model.goTo(obstacleAv.avoidF2(features.get(features.size() - 1), model.getRobotPose()));
                 objizdeni = 2;
             }
+            if(objizdeni == 3){ //robot uz je nad prekazkou, vraci se do puvodni drahy 
+                
+            }
         }
 
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
