@@ -44,4 +44,10 @@ public class ObstacleAvoider {
         return null;
         //pojede nahoru a vzdycky se podiva jestli se muze vratit
     }
+    
+    Waypoint Avoid(Pose originalPose){
+        Point prekazka = TestingPanel.getLastFeature();
+        
+        return null;
+    }
 }

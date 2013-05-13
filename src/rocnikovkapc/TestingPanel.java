@@ -147,8 +147,7 @@ public class TestingPanel extends NavigationPanel {
                 model.goTo(obstacleAv.avoidF2(features.get(features.size() - 1), model.getRobotPose()));
                 objizdeni = 2;
             }
-            if(objizdeni == 3){ //robot uz je nad prekazkou, vraci se do puvodni drahy 
-                
+            if (objizdeni == 3) { //robot uz je nad prekazkou, vraci se do puvodni drahy 
             }
         }
 
@@ -223,5 +222,10 @@ public class TestingPanel extends NavigationPanel {
         model.setTravelSpeed(100);
         model.setPose(new Pose(TRACK_WIDTH / 2, TRACK_WIDTH / 2, 90)); // proste tak musi zacinat 
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
+    }
+
+    public lejos.geom.Point getLastFeature() {
+        ArrayList<lejos.geom.Point> features = model.getFeatures();
+     return features.get(features.size() - 1);
     }
 }
