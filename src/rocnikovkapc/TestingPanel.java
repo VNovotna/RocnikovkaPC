@@ -43,7 +43,7 @@ public class TestingPanel extends NavigationPanel {
     private static final long STEP_LENGTH = 16; //vlastne presnost mereni
     private static final long XRANGE = 100;
     private static final long YRANGE = 100;  //velikost mapovane oblasti
-    private boolean objizdeni = false;
+    private int objizdeni = 0;
 
     public static void main(String[] args) throws IOException {
         PilotProps pp = new PilotProps();
@@ -138,13 +138,13 @@ public class TestingPanel extends NavigationPanel {
         super.eventReceived(navEvent);
 
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
-//            if (!objizdeni) {
+            if (objizdeni == 0) {
             Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
             model.goTo(nextWP);
-//            } else { //objizdim ale u nemam prekazku pred 
-//                ArrayList<lejos.geom.Point> features = model.getFeatures();
-//                 model.goTo(obstacleAv.avoidF2(features.get(features.size()-1), model.getRobotPose()));
-//            }
+            } if(objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
+                ArrayList<lejos.geom.Point> features = model.getFeatures();
+                 model.goTo(obstacleAv.avoidF2(features.get(features.size()-1), model.getRobotPose()));
+            }
         }
 
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
@@ -161,18 +161,20 @@ public class TestingPanel extends NavigationPanel {
             System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
             
 //                zjistit kdy jsem moc blízko a objet prekazku
-            if (!objizdeni && featureX != 0 && featureY != 0) {
+            if (objizdeni == 0 && featureX != 0 && featureY != 0) {
                 if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
                     System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-                    //objizdeni = true
+                    objizdeni = 1;
                     //obstacleAv.avoidF1(point, pozice);
                 }
                 else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
                     System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    objizdeni = 1;
 
                 }
                 else if (featureX < pozice.getX() + TRACK_WIDTH) {
                     System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    objizdeni = 1;
                 }
             }
             System.out.println("---");
