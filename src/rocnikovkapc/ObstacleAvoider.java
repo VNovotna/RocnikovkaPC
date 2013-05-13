@@ -45,9 +45,17 @@ public class ObstacleAvoider {
         //pojede nahoru a vzdycky se podiva jestli se muze vratit
     }
     
-    Waypoint Avoid(Pose originalPose){
-        Point prekazka = TestingPanel.getLastFeature();
-        
+    public Waypoint Avoid(Pose originalPose, Point prekazka){
+        switch(Math.round(originalPose.getHeading()/90)){
+            
+        }
         return null;
+    }
+    float repairHeading(float heading){
+        heading = heading%360;
+        heading = Math.round(heading/90)*90;
+        if(heading==0)heading = 180;
+        else if(heading==180)heading=0;
+        return 180-heading;
     }
 }

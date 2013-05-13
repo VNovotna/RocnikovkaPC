@@ -144,7 +144,7 @@ public class TestingPanel extends NavigationPanel {
             }
             if (objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
                 ArrayList<lejos.geom.Point> features = model.getFeatures();
-                model.goTo(obstacleAv.avoidF2(features.get(features.size() - 1), model.getRobotPose()));
+                model.goTo(obstacleAv.avoidF2(getLastFeature(), model.getRobotPose()));
                 objizdeni = 2;
             }
             if (objizdeni == 3) { //robot uz je nad prekazkou, vraci se do puvodni drahy 
@@ -226,6 +226,6 @@ public class TestingPanel extends NavigationPanel {
 
     public lejos.geom.Point getLastFeature() {
         ArrayList<lejos.geom.Point> features = model.getFeatures();
-     return features.get(features.size() - 1);
+        return features.get(features.size() - 1);
     }
 }
