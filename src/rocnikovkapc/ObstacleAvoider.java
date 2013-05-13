@@ -1,6 +1,7 @@
 package rocnikovkapc;
 
 import lejos.geom.Point;
+import lejos.robotics.mapping.PCNavigationModel;
 import lejos.robotics.navigation.Pose;
 import lejos.robotics.navigation.Waypoint;
 
@@ -14,11 +15,13 @@ public class ObstacleAvoider {
     private final long XRANGE;
     private final long YRANGE;
     private int faze = 0;
+    private final PCNavigationModel model;
 
-    public ObstacleAvoider(long STEP_LENGTH, long XRANGE, long YRANGE) {
+    public ObstacleAvoider(long STEP_LENGTH, long XRANGE, long YRANGE,PCNavigationModel model) {
         this.STEP_LENGTH = STEP_LENGTH;
         this.XRANGE = XRANGE;
         this.YRANGE = YRANGE;
+        this.model = model;
     }
 
     Waypoint avoidF1(Point obstacle, Pose originalPose) {
@@ -45,11 +48,24 @@ public class ObstacleAvoider {
         //pojede nahoru a vzdycky se podiva jestli se muze vratit
     }
     
-    public Waypoint Avoid(Pose originalPose, Point prekazka){
-        switch(Math.round(originalPose.getHeading()/90)){
-            
+    public Waypoint Avoid(Pose originalPose){
+        float x = originalPose.getX();
+        float y = originalPose.getY();
+        switch(Math.round(repairHeading(originalPose.getHeading()))){
+            case 90:
+                x+=STEP_LENGTH;
+                break;
+            case 180:
+                y+=STEP_LENGTH;
+                break;
+            case 0:
+                y-=STEP_LENGTH;
+                break;
+            case -90:
+                x-=STEP_LENGTH;
+                break;
         }
-        return null;
+        return new Waypoint(x,y,originalPose.getHeading());
     }
     float repairHeading(float heading){
         heading = heading%360;
@@ -57,5 +73,12 @@ public class ObstacleAvoider {
         if(heading==0)heading = 180;
         else if(heading==180)heading=0;
         return 180-heading;
+    }
+    void bypass(){
+        
+    }
+    lejos.geom.Point get(){
+        
+        return null;
     }
 }

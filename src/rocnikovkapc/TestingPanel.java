@@ -53,7 +53,6 @@ public class TestingPanel extends NavigationPanel {
             System.exit(1);
         }
         wayGenerator = new WayGenerator(TRACK_WIDTH, STEP_LENGTH, XRANGE, YRANGE);
-        obstacleAv = new ObstacleAvoider(STEP_LENGTH, XRANGE, YRANGE);
         (new TestingPanel()).run();
     }
 
@@ -220,6 +219,7 @@ public class TestingPanel extends NavigationPanel {
         super.whenConnected();
         model.setRotateSpeed(100);
         model.setTravelSpeed(100);
+        obstacleAv = new ObstacleAvoider(STEP_LENGTH, XRANGE, YRANGE,model);
         model.setPose(new Pose(TRACK_WIDTH / 2, TRACK_WIDTH / 2, 90)); // proste tak musi zacinat 
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
