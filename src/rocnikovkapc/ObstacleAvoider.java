@@ -17,11 +17,10 @@ public class ObstacleAvoider {
     private final long YRANGE;
     private float originalX;
     private float originalY;
-    
     private int faze = 0;
     private final PCNavigationModel model;
 
-    public ObstacleAvoider(long STEP_LENGTH, long XRANGE, long YRANGE,PCNavigationModel model) {
+    public ObstacleAvoider(long STEP_LENGTH, long XRANGE, long YRANGE, PCNavigationModel model) {
         this.STEP_LENGTH = STEP_LENGTH;
         this.XRANGE = XRANGE;
         this.YRANGE = YRANGE;
@@ -36,7 +35,7 @@ public class ObstacleAvoider {
         System.out.print("heading:  " + originalHeading);
         if (originalHeading > 2) {
             System.out.println(" -> nahoru");
-            newPose.setLocation(originalX+STEP_LENGTH, originalY);
+            newPose.setLocation(originalX + STEP_LENGTH, originalY);
             newPose.setHeading(90);
         } else if (originalHeading < -2) {
             System.out.println(" -> dolu");
@@ -51,42 +50,74 @@ public class ObstacleAvoider {
         return null;
         //pojede nahoru a vzdycky se podiva jestli se muze vratit
     }
-    
-    public Waypoint Avoid(Pose originalPose){
+
+    public Waypoint avoid(Pose originalPose) {
         float x = originalPose.getX();
         float y = originalPose.getY();
-        switch(Math.round(repairHeading(originalPose.getHeading()))){
+        switch (Math.round(repairHeading(originalPose.getHeading()))) {
             case 90:
-                x+=STEP_LENGTH;
+                x += STEP_LENGTH;
                 break;
             case 180:
-                y+=STEP_LENGTH;
+                y += STEP_LENGTH;
                 break;
             case 0:
-                y-=STEP_LENGTH;
+                y -= STEP_LENGTH;
                 break;
             case -90:
-                x-=STEP_LENGTH;
+                x -= STEP_LENGTH;
                 break;
         }
-        return new Waypoint(x,y,originalPose.getHeading());
+        return new Waypoint(x, y, originalPose.getHeading());
     }
-    float repairHeading(float heading){
-        heading = heading%360;
-        heading = Math.round(heading/90)*90;
-        if(heading==0)heading = 180;
-        else if(heading==180)heading=0;
-        return 180-heading;
+
+    float repairHeading(float heading) {
+        heading = heading % 360;
+        heading = Math.round(heading / 90) * 90;
+        if (heading == 0) {
+            heading = 180;
+        } else if (heading == 180) {
+            heading = 0;
+        }
+        return 180 - heading;
     }
-    void bypass(){
+
+    void bypass() {
         Pose p = model.getRobotPose();
         originalX = p.getX();
         originalY = p.getY();
-        while(){
-            
-        }
+        Point last;
+        Point current = getLastFeature();
+        model.goTo(avoid(p));
+        do {
+            last = current;
+            current = getLastFeature();
+            if (last == current) {
+                float x = p.getX();
+                float y = p.getY();
+                switch (Math.round(repairHeading(p.getHeading()))) {
+                    case 90:
+                        x += STEP_LENGTH;
+                        break;
+                    case 180:
+                        y += STEP_LENGTH;
+                        break;
+                    case 0:
+                        y -= STEP_LENGTH;
+                        break;
+                    case -90:
+                        x -= STEP_LENGTH;
+                        break;
+                }
+                model.goTo(new Waypoint(x,y,repairHeading(p.getHeading()+90)));
+            }else{
+                model.goTo(avoid(p));
+            }
+            p = model.getRobotPose();
+        } while (Math.abs(p.getX() - originalX) > 5 && Math.abs(p.getY() - originalY) > 5);
     }
-    Point getLastFeature(){
+
+    Point getLastFeature() {
         ArrayList<Point> features = model.getFeatures();
         return features.get(features.size() - 1);
     }
