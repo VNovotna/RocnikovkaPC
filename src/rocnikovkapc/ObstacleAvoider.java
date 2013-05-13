@@ -1,5 +1,6 @@
 package rocnikovkapc;
 
+import java.util.ArrayList;
 import lejos.geom.Point;
 import lejos.robotics.mapping.PCNavigationModel;
 import lejos.robotics.navigation.Pose;
@@ -14,6 +15,9 @@ public class ObstacleAvoider {
     private final long STEP_LENGTH;
     private final long XRANGE;
     private final long YRANGE;
+    private float originalX;
+    private float originalY;
+    
     private int faze = 0;
     private final PCNavigationModel model;
 
@@ -75,10 +79,15 @@ public class ObstacleAvoider {
         return 180-heading;
     }
     void bypass(){
-        
+        Pose p = model.getRobotPose();
+        originalX = p.getX();
+        originalY = p.getY();
+        while(){
+            
+        }
     }
-    lejos.geom.Point get(){
-        
-        return null;
+    Point getLastFeature(){
+        ArrayList<Point> features = model.getFeatures();
+        return features.get(features.size() - 1);
     }
 }
