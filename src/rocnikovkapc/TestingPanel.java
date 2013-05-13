@@ -139,11 +139,13 @@ public class TestingPanel extends NavigationPanel {
 
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
             if (objizdeni == 0) {
-            Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
-            model.goTo(nextWP);
-            } if(objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
+                Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
+                model.goTo(nextWP);
+            }
+            if (objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
                 ArrayList<lejos.geom.Point> features = model.getFeatures();
-                 model.goTo(obstacleAv.avoidF2(features.get(features.size()-1), model.getRobotPose()));
+                model.goTo(obstacleAv.avoidF2(features.get(features.size() - 1), model.getRobotPose()));
+                objizdeni = 2;
             }
         }
 
@@ -159,22 +161,52 @@ public class TestingPanel extends NavigationPanel {
             System.out.println("prekazka: " + featureX + " | " + featureY);
             Pose pozice = model.getRobotPose();
             System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
-            
-//                zjistit kdy jsem moc blízko a objet prekazku
+
+//                zjistit kdy jsem moc blízko a objet prekazku 
             if (objizdeni == 0 && featureX != 0 && featureY != 0) {
                 if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
                     System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                     objizdeni = 1;
-                    //obstacleAv.avoidF1(point, pozice);
-                }
-                else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
+                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
+                } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
                     System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
+                    objizdeni = 1;
+
+                } else if (featureX < pozice.getX() + TRACK_WIDTH) {
+                    System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
                     objizdeni = 1;
 
                 }
-                else if (featureX < pozice.getX() + TRACK_WIDTH) {
-                    System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-                    objizdeni = 1;
+            }
+            //kdyz objizdim faze 1 a prekazka mi stale prekazi
+            if (objizdeni == 1 && featureX != 0 && featureY != 0) {
+                if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
+                    System.out.println("1. Porad prekazi " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
+                } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
+                    System.out.println("2. Porad prekazi " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
+
+                } else if (featureX < pozice.getX() + TRACK_WIDTH) {
+                    System.out.println("3. Porad prekazi " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
+                }
+            }
+
+            //kdyz objizdim faze 2 a furt se nemuzu vratit
+            if (objizdeni == 2 && featureX != 0 && featureY != 0) {
+                if (featureX < pozice.getX() + TRACK_WIDTH && pozice.getHeading() == 180) {
+                    System.out.println("1. F2 Porad prekazi " + featureX + " < " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF2(new lejos.geom.Point(featureX, featureY), pozice));
+                } else if (featureX > pozice.getX() - TRACK_WIDTH && pozice.getHeading() == 0) {
+                    System.out.println("2. F2 Porad prekazi " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF2(new lejos.geom.Point(featureX, featureY), pozice));
+
+                } else if (featureX < pozice.getX() + TRACK_WIDTH) {
+                    System.out.println("3. F2 Porad prekazi " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    model.goTo(obstacleAv.avoidF2(new lejos.geom.Point(featureX, featureY), pozice));
                 }
             }
             System.out.println("---");
