@@ -27,8 +27,8 @@ import lejos.util.PilotProps;
  */
 public class TestingPanel extends NavigationPanel {
 
-    private static final int WINDOW_WIDTH = 640;
-    private static final int WINDOW_HEIGHT = 480;
+    private static final int WINDOW_WIDTH = 800;
+    private static final int WINDOW_HEIGHT = 600;
     private static final Dimension MAP_SIZE = new Dimension(700, 600);
     private static final Point INITIAL_VIEW_START = new Point(0, -10);
     private static final int INITIAL_ZOOM = 110;
@@ -41,8 +41,8 @@ public class TestingPanel extends NavigationPanel {
     private static ObstacleAvoider obstacleAv;
     private static final long TRACK_WIDTH = 16; //sirka kol robota
     private static final long STEP_LENGTH = 16; //vlastne presnost mereni
-    private static final long XRANGE = 64;
-    private static final long YRANGE = 64;  //velikost mapovane oblasti
+    private static final long XRANGE = 100;
+    private static final long YRANGE = 100;  //velikost mapovane oblasti
     private boolean objizdeni = false;
 
     public static void main(String[] args) throws IOException {
@@ -138,41 +138,52 @@ public class TestingPanel extends NavigationPanel {
         super.eventReceived(navEvent);
 
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
-            if (!objizdeni) {
-                Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
-                model.goTo(nextWP);
-            } else { //objizdim ale u nemam prekazku pred 
-                ArrayList<lejos.geom.Point> features = model.getFeatures();
-                
-                obstacleAv.avoidF2(features.get(features.size()), model.getRobotPose());
-            }
+//            if (!objizdeni) {
+            Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
+            model.goTo(nextWP);
+//            } else { //objizdim ale u nemam prekazku pred 
+//                ArrayList<lejos.geom.Point> features = model.getFeatures();
+//                 model.goTo(obstacleAv.avoidF2(features.get(features.size()-1), model.getRobotPose()));
+//            }
         }
 
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
             ArrayList<lejos.geom.Point> features = model.getFeatures();
+            System.out.println("FEATURE_DETECTED");
+            float featureX = 0;
+            float featureY = 0;
             for (lejos.geom.Point point : features) {
-                float x = point.x;
-                float y = point.y;
-                System.out.println("prekazka: " + x + " | " + y);
-                Pose pozice = model.getRobotPose();
-                System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
-
-//                zjistit kdy jsem moc blízko a objet prekazku
-                if (!objizdeni) {
-                    if (y > model.getRobotPose().getY() + TRACK_WIDTH || y < model.getRobotPose().getY() - TRACK_WIDTH || x > model.getRobotPose().getX() - TRACK_WIDTH) {
-                        //System.out.println("Musim objet " + y + " >< " + model.getRobotPose().getY() + " + " + TRACK_WIDTH);
-                        objizdeni = true;
-                        obstacleAv.avoidF1(point, model.getRobotPose());
-                    }
-                }
-                System.out.println("---");
+                featureX = point.x;
+                featureY = point.y;
             }
+            System.out.println("prekazka: " + featureX + " | " + featureY);
+            Pose pozice = model.getRobotPose();
+            System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
+            
+//                zjistit kdy jsem moc blízko a objet prekazku
+            if (!objizdeni && featureX != 0 && featureY != 0) {
+                if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
+                    System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                    //objizdeni = true
+                    //obstacleAv.avoidF1(point, pozice);
+                }
+                else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
+                    System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
+
+                }
+                else if (featureX < pozice.getX() + TRACK_WIDTH) {
+                    System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
+                }
+            }
+            System.out.println("---");
         }
     }
 
     @Override
     public void whenConnected() {
         super.whenConnected();
+        model.setRotateSpeed(100);
+        model.setTravelSpeed(100);
         model.setPose(new Pose(TRACK_WIDTH / 2, TRACK_WIDTH / 2, 90)); // proste tak musi zacinat 
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }

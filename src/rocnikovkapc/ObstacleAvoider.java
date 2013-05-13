@@ -40,7 +40,8 @@ public class ObstacleAvoider {
         return new Waypoint(newPose);
     }
 
-    void avoidF2(Point get, Pose robotPose) {
+    Waypoint avoidF2(Point get, Pose robotPose) {
+        return null;
         //pojede nahoru a vzdycky se podiva jestli se muze vratit
     }
 }
