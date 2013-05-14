@@ -31,7 +31,7 @@ public class TestingPanel extends NavigationPanel {
     private static final int WINDOW_HEIGHT = 600;
     private static final Dimension MAP_SIZE = new Dimension(700, 600);
     private static final Point INITIAL_VIEW_START = new Point(0, -10);
-    private static final int INITIAL_ZOOM = 110;
+    private static final int INITIAL_ZOOM = 160;
     private JButton stopButton = new JButton("nigga halt!");
     private JTextArea logArea = new JTextArea("Tady běží logování \n", 35, 35);
     private JScrollPane log = new JScrollPane(logArea);
@@ -41,8 +41,8 @@ public class TestingPanel extends NavigationPanel {
     private static ObstacleAvoider obstacleAv;
     private static final long TRACK_WIDTH = 16; //sirka kol robota
     private static final long STEP_LENGTH = 20; //vlastne presnost mereni
-    private static final long XRANGE = 80;
-    private static final long YRANGE = 80;  //velikost mapovane oblasti
+    private static final long XRANGE = 110;
+    private static final long YRANGE = 90;  //velikost mapovane oblasti
     public static int objizdeni = 0;
 
     public static void main(String[] args) throws IOException {
@@ -157,15 +157,15 @@ public class TestingPanel extends NavigationPanel {
 
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
             ArrayList<lejos.geom.Point> features = model.getFeatures();
-            System.out.println("FEATURE_DETECTED");
+            
             float featureX = 0;
             float featureY = 0;
             for (lejos.geom.Point point : features) {
                 featureX = point.x;
                 featureY = point.y;
             }
-            if (objizdeni == 0 && (featureX > XRANGE && featureY > YRANGE)) { //objekty mimo hledan0 pole nem8 cenu ani vypisovat 
-
+            if (objizdeni == 0 && (featureX < XRANGE && featureY < YRANGE)) { //objekty mimo hledan0 pole nem8 cenu ani vypisovat 
+                System.out.println("FEATURE_DETECTED");
                 System.out.println("prekazka: " + featureX + " | " + featureY);
                 Pose pozice = model.getRobotPose();
                 System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
@@ -177,14 +177,17 @@ public class TestingPanel extends NavigationPanel {
                     if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
                         System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
+                        model.clearPath();
                         obstacleAv.bypass();
                     } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
                         System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
+                        model.clearPath();
                         obstacleAv.bypass();
                     } else if (featureX < pozice.getX() + TRACK_WIDTH && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
                         System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
+                        model.clearPath();
                         obstacleAv.bypass();
                     }
                 }
@@ -225,8 +228,8 @@ public class TestingPanel extends NavigationPanel {
     @Override
     public void whenConnected() {
         super.whenConnected();
-        model.setRotateSpeed(60);
-        model.setTravelSpeed(60);
+        model.setRotateSpeed(80);
+        model.setTravelSpeed(10);
         model.setPose(new Pose(TRACK_WIDTH / 2, TRACK_WIDTH / 2, 90)); // proste tak musi zacinat 
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
