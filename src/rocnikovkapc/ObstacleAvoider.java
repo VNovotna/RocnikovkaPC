@@ -43,7 +43,7 @@ public class ObstacleAvoider {
     }
 
     float repairHeading(float heading) {
-        heading = heading+360;
+        while(heading<0)heading+=360;
         heading = heading % 360;
         heading = Math.round(heading / 90) * 90;
         if (heading == 0) {
