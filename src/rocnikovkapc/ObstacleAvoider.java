@@ -12,13 +12,13 @@ import lejos.robotics.navigation.Waypoint;
  */
 public class ObstacleAvoider {
 
-    private final long TRACK_WIDTH;
+    private final long STEP_LENGTH;
     private float originalX;
     private float originalY;
     private final PCNavigationModel model;
 
     public ObstacleAvoider(long STEP_LENGTH, PCNavigationModel model) {
-        this.TRACK_WIDTH = STEP_LENGTH;
+        this.STEP_LENGTH = STEP_LENGTH;
         this.model = model;
     }
 
@@ -27,16 +27,16 @@ public class ObstacleAvoider {
         float y = originalPose.getY();
         switch (Math.round(repairHeading(originalPose.getHeading()))) {
             case 90:
-                x += TRACK_WIDTH;
+                x += STEP_LENGTH;
                 break;
             case 180:
-                y += TRACK_WIDTH;
+                y += STEP_LENGTH;
                 break;
             case 0:
-                y -= TRACK_WIDTH;
+                y -= STEP_LENGTH;
                 break;
             case -90:
-                x -= TRACK_WIDTH;
+                x -= STEP_LENGTH;
                 break;
         }
         return new Waypoint(x, y, originalPose.getHeading());
@@ -69,16 +69,16 @@ public class ObstacleAvoider {
                 float y = p.getY();
                 switch (Math.round(repairHeading(p.getHeading()))) {
                     case 90:
-                        x += TRACK_WIDTH;
+                        x += STEP_LENGTH;
                         break;
                     case 180:
-                        y += TRACK_WIDTH;
+                        y += STEP_LENGTH;
                         break;
                     case 0:
-                        y -= TRACK_WIDTH;
+                        y -= STEP_LENGTH;
                         break;
                     case -90:
-                        x -= TRACK_WIDTH;
+                        x -= STEP_LENGTH;
                         break;
                 }
                 model.goTo(new Waypoint(x, y, repairHeading(p.getHeading() + 90)));
@@ -90,7 +90,7 @@ public class ObstacleAvoider {
             System.out.println("lastFeature: " + last.x + "|" + last.y);
             current = getLastFeature();
             System.out.println("lastFeature: " + current.x + "|" + current.y);
-        } while (Math.abs(p.getX() - originalX) > TRACK_WIDTH / 4 && Math.abs(p.getY() - originalY) > TRACK_WIDTH / 4);
+        } while (Math.abs(p.getX() - originalX) > STEP_LENGTH / 4 && Math.abs(p.getY() - originalY) > STEP_LENGTH / 4);
 
         TestingPanel.objizdeni = 2;
     }
