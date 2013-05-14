@@ -88,7 +88,7 @@ public class ObstacleAvoider {
             p = model.getRobotPose();
         } while (Math.abs(p.getX() - originalX) > 5 && Math.abs(p.getY() - originalY) > 5);
         
-        TestingPanel.objizdeni = 0;
+        TestingPanel.objizdeni = 2;
     }
 
     Point getLastFeature() {

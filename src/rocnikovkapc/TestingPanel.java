@@ -135,11 +135,16 @@ public class TestingPanel extends NavigationPanel {
     @Override
     public void eventReceived(NavigationModel.NavEvent navEvent) {
         super.eventReceived(navEvent);
-        System.out.println(navEvent.name());
+//        System.out.println(navEvent.name());
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
+            if (objizdeni == 2) {
+                System.out.println("bypass skoncil");
+                objizdeni = 0;
+            }
             if (objizdeni == 0) {
-            Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
-            model.goTo(nextWP);
+                System.out.println("");
+                Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
+                model.goTo(nextWP);
             }
 //            if (objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
 //                ArrayList<lejos.geom.Point> features = model.getFeatures();
@@ -172,12 +177,12 @@ public class TestingPanel extends NavigationPanel {
 //                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
                 } else if (featureY > pozice.getY() - TRACK_WIDTH * 2 && pozice.getHeading() < -2) {
                     System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
-                     objizdeni = 1;
+                    objizdeni = 1;
                     obstacleAv.bypass();
 //                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
                 } else if (featureX < pozice.getX() + TRACK_WIDTH * 2 && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
                     System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
-                     objizdeni = 1;
+                    objizdeni = 1;
                     obstacleAv.bypass();
                     //model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
                 }
