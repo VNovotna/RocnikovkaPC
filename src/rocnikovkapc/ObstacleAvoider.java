@@ -60,14 +60,10 @@ public class ObstacleAvoider {
         Pose p = model.getRobotPose();
         originalX = p.getX();
         originalY = p.getY();
-        Point last;
+        Point last = getLastFeature();
         Point current = getLastFeature();
         model.goTo(avoid(p));
         do {
-            last = current;
-            System.out.println("lastFeature: " + last.x + "|" + last.y);
-            current = getLastFeature();
-            System.out.println("lastFeature: " + current.x + "|" + current.y);
             if (last == current) {
                 float x = p.getX();
                 float y = p.getY();
@@ -90,6 +86,10 @@ public class ObstacleAvoider {
                 model.goTo(avoid(p));
             }
             p = model.getRobotPose();
+            last = current;
+            System.out.println("lastFeature: " + last.x + "|" + last.y);
+            current = getLastFeature();
+            System.out.println("lastFeature: " + current.x + "|" + current.y);
         } while (Math.abs(p.getX() - originalX) > 5 && Math.abs(p.getY() - originalY) > 5);
 
         TestingPanel.objizdeni = 2;
