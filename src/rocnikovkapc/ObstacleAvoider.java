@@ -13,44 +13,15 @@ import lejos.robotics.navigation.Waypoint;
 public class ObstacleAvoider {
 
     private final long STEP_LENGTH;
-    private final long XRANGE;
-    private final long YRANGE;
     private float originalX;
     private float originalY;
-    private int faze = 0;
     private final PCNavigationModel model;
 
-    public ObstacleAvoider(long STEP_LENGTH, long XRANGE, long YRANGE, PCNavigationModel model) {
+    public ObstacleAvoider(long STEP_LENGTH, PCNavigationModel model) {
         this.STEP_LENGTH = STEP_LENGTH;
-        this.XRANGE = XRANGE;
-        this.YRANGE = YRANGE;
         this.model = model;
     }
-
-    Waypoint avoidF1(Point obstacle, Pose originalPose) {
-        float originalHeading = originalPose.getHeading();
-        float originalX = originalPose.getX();
-        float originalY = originalPose.getY();
-        Pose newPose = new Pose();
-        System.out.print("heading:  " + originalHeading);
-        if (originalHeading > 2) {
-            System.out.println(" -> nahoru");
-            newPose.setLocation(originalX + STEP_LENGTH, originalY);
-            newPose.setHeading(90);
-        } else if (originalHeading < -2) {
-            System.out.println(" -> dolu");
-        } else { //rovne
-            System.out.println(" -> rovne");
-        }
-        faze++;
-        return new Waypoint(newPose);
-    }
-
-    Waypoint avoidF2(Point get, Pose robotPose) {
-        return null;
-        //pojede nahoru a vzdycky se podiva jestli se muze vratit
-    }
-
+    
     public Waypoint avoid(Pose originalPose) {
         float x = originalPose.getX();
         float y = originalPose.getY();
@@ -115,6 +86,8 @@ public class ObstacleAvoider {
             }
             p = model.getRobotPose();
         } while (Math.abs(p.getX() - originalX) > 5 && Math.abs(p.getY() - originalY) > 5);
+        
+        TestingPanel.objizdeni = 0;
     }
 
     Point getLastFeature() {

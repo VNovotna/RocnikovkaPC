@@ -40,10 +40,10 @@ public class TestingPanel extends NavigationPanel {
     private static WayGenerator wayGenerator;
     private static ObstacleAvoider obstacleAv;
     private static final long TRACK_WIDTH = 16; //sirka kol robota
-    private static final long STEP_LENGTH = 16; //vlastne presnost mereni
+    private static final long STEP_LENGTH = 20; //vlastne presnost mereni
     private static final long XRANGE = 100;
     private static final long YRANGE = 100;  //velikost mapovane oblasti
-    private int objizdeni = 0;
+    public static int objizdeni = 0;
 
     public static void main(String[] args) throws IOException {
         PilotProps pp = new PilotProps();
@@ -135,11 +135,11 @@ public class TestingPanel extends NavigationPanel {
     @Override
     public void eventReceived(NavigationModel.NavEvent navEvent) {
         super.eventReceived(navEvent);
-
+        System.out.println(navEvent.name());
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
             if (objizdeni == 0) {
-                Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
-                model.goTo(nextWP);
+            Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
+            model.goTo(nextWP);
             }
 //            if (objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
 //                ArrayList<lejos.geom.Point> features = model.getFeatures();
@@ -162,25 +162,25 @@ public class TestingPanel extends NavigationPanel {
             System.out.println("prekazka: " + featureX + " | " + featureY);
             Pose pozice = model.getRobotPose();
             System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
-            obstacleAv = new ObstacleAvoider(TRACK_WIDTH, XRANGE, YRANGE, model);
+            obstacleAv = new ObstacleAvoider(TRACK_WIDTH, model);
 //                zjistit kdy jsem moc blízko a objet prekazku 
             if (objizdeni == 0 && featureX != 0 && featureY != 0) {
-                if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
-                    System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-                    obstacleAv.avoid(pozice);
-//                    objizdeni = 1;
+                if (featureY < pozice.getY() + TRACK_WIDTH * 2 && pozice.getHeading() > 2) {
+                    System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                    objizdeni = 1;
+                    obstacleAv.bypass();
 //                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-                } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
-                    System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
-                    obstacleAv.avoid(pozice);
+                } else if (featureY > pozice.getY() - TRACK_WIDTH * 2 && pozice.getHeading() < -2) {
+                    System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                    obstacleAv.bypass();
 //                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-//                    objizdeni = 1;
+                    objizdeni = 1;
 
-                } else if (featureX < pozice.getX() + TRACK_WIDTH) {
-                    System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-                    obstacleAv.avoid(pozice);
+                } else if (featureX < pozice.getX() + TRACK_WIDTH * 2 && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
+                    System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                    obstacleAv.bypass();
                     //model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-//                    objizdeni = 1;
+                    objizdeni = 1;
 
                 }
             }
@@ -220,8 +220,8 @@ public class TestingPanel extends NavigationPanel {
     @Override
     public void whenConnected() {
         super.whenConnected();
-        model.setRotateSpeed(100);
-        model.setTravelSpeed(100);
+        model.setRotateSpeed(60);
+        model.setTravelSpeed(60);
         model.setPose(new Pose(TRACK_WIDTH / 2, TRACK_WIDTH / 2, 90)); // proste tak musi zacinat 
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
