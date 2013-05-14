@@ -172,16 +172,14 @@ public class TestingPanel extends NavigationPanel {
 //                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
                 } else if (featureY > pozice.getY() - TRACK_WIDTH * 2 && pozice.getHeading() < -2) {
                     System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                     objizdeni = 1;
                     obstacleAv.bypass();
 //                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-                    objizdeni = 1;
-
                 } else if (featureX < pozice.getX() + TRACK_WIDTH * 2 && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
                     System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                     objizdeni = 1;
                     obstacleAv.bypass();
                     //model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-                    objizdeni = 1;
-
                 }
             }
 //            //kdyz objizdim faze 1 a prekazka mi stale prekazi
