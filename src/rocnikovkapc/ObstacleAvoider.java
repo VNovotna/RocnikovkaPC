@@ -21,7 +21,7 @@ public class ObstacleAvoider {
         this.STEP_LENGTH = STEP_LENGTH;
         this.model = model;
     }
-    
+
     public Waypoint avoid(Pose originalPose) {
         float x = originalPose.getX();
         float y = originalPose.getY();
@@ -43,7 +43,9 @@ public class ObstacleAvoider {
     }
 
     float repairHeading(float heading) {
-        while(heading<0)heading+=360;
+        while (heading < 0) {
+            heading += 360;
+        }
         heading = heading % 360;
         heading = Math.round(heading / 90) * 90;
         if (heading == 0) {
@@ -63,7 +65,9 @@ public class ObstacleAvoider {
         model.goTo(avoid(p));
         do {
             last = current;
+            System.out.println("lastFeature: " + last.x + "|" + last.y);
             current = getLastFeature();
+            System.out.println("lastFeature: " + current.x + "|" + current.y);
             if (last == current) {
                 float x = p.getX();
                 float y = p.getY();
@@ -81,13 +85,13 @@ public class ObstacleAvoider {
                         x -= STEP_LENGTH;
                         break;
                 }
-                model.goTo(new Waypoint(x,y,repairHeading(p.getHeading()+90)));
-            }else{
+                model.goTo(new Waypoint(x, y, repairHeading(p.getHeading() + 90)));
+            } else {
                 model.goTo(avoid(p));
             }
             p = model.getRobotPose();
         } while (Math.abs(p.getX() - originalX) > 5 && Math.abs(p.getY() - originalY) > 5);
-        
+
         TestingPanel.objizdeni = 2;
     }
 
