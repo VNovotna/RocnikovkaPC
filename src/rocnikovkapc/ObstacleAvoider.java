@@ -85,6 +85,7 @@ public class ObstacleAvoider {
             } else {
                 model.goTo(avoid(p));
             }
+
             p = model.getRobotPose();
             last = current;
             System.out.println("lastFeature: " + last.x + "|" + last.y);
@@ -97,6 +98,8 @@ public class ObstacleAvoider {
 
     Point getLastFeature() {
         ArrayList<Point> features = model.getFeatures();
-        return features.get(features.size() - 1);
+        Point feature = features.get(features.size() - 1);
+        System.out.println("getLastFeature(): " + feature.x + "|" + feature.y);
+        return feature;
     }
 }

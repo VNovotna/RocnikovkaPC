@@ -41,8 +41,8 @@ public class TestingPanel extends NavigationPanel {
     private static ObstacleAvoider obstacleAv;
     private static final long TRACK_WIDTH = 16; //sirka kol robota
     private static final long STEP_LENGTH = 20; //vlastne presnost mereni
-    private static final long XRANGE = 100;
-    private static final long YRANGE = 100;  //velikost mapovane oblasti
+    private static final long XRANGE = 80;
+    private static final long YRANGE = 80;  //velikost mapovane oblasti
     public static int objizdeni = 0;
 
     public static void main(String[] args) throws IOException {
@@ -138,11 +138,11 @@ public class TestingPanel extends NavigationPanel {
 //        System.out.println(navEvent.name());
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
             if (objizdeni == 2) {
+                obstacleAv = null;
                 System.out.println("bypass skoncil");
                 objizdeni = 0;
             }
             if (objizdeni == 0) {
-                System.out.println("");
                 Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
                 model.goTo(nextWP);
             }
@@ -156,36 +156,36 @@ public class TestingPanel extends NavigationPanel {
         }
 
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
-            if (objizdeni == 0) {
-                ArrayList<lejos.geom.Point> features = model.getFeatures();
-                System.out.println("FEATURE_DETECTED");
-                float featureX = 0;
-                float featureY = 0;
-                for (lejos.geom.Point point : features) {
-                    featureX = point.x;
-                    featureY = point.y;
-                }
+            ArrayList<lejos.geom.Point> features = model.getFeatures();
+            System.out.println("FEATURE_DETECTED");
+            float featureX = 0;
+            float featureY = 0;
+            for (lejos.geom.Point point : features) {
+                featureX = point.x;
+                featureY = point.y;
+            }
+            if (objizdeni == 0 && (featureX > XRANGE && featureY > YRANGE)) { //objekty mimo hledan0 pole nem8 cenu ani vypisovat 
+
                 System.out.println("prekazka: " + featureX + " | " + featureY);
                 Pose pozice = model.getRobotPose();
                 System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
+
                 obstacleAv = new ObstacleAvoider(TRACK_WIDTH, model);
+//                obstacleAv.getLastFeature();
 //                zjistit kdy jsem moc blízko a objet prekazku 
                 if (featureX != 0 && featureY != 0) {
-                    if (featureY < pozice.getY() + TRACK_WIDTH * 2 && pozice.getHeading() > 2) {
-                        System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                    if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
+                        System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
                         obstacleAv.bypass();
-//                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-                    } else if (featureY > pozice.getY() - TRACK_WIDTH * 2 && pozice.getHeading() < -2) {
-                        System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                    } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
+                        System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
                         obstacleAv.bypass();
-//                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-                    } else if (featureX < pozice.getX() + TRACK_WIDTH * 2 && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
-                        System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH * 2 + " H: " + pozice.getHeading());
+                    } else if (featureX < pozice.getX() + TRACK_WIDTH && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
+                        System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
                         obstacleAv.bypass();
-                        //model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
                     }
                 }
 //            //kdyz objizdim faze 1 a prekazka mi stale prekazi
