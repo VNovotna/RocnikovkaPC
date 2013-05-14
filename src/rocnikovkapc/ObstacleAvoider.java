@@ -90,7 +90,7 @@ public class ObstacleAvoider {
             System.out.println("lastFeature: " + last.x + "|" + last.y);
             current = getLastFeature();
             System.out.println("lastFeature: " + current.x + "|" + current.y);
-        } while (Math.abs(p.getX() - originalX) > 4 && Math.abs(p.getY() - originalY) > 4);
+        } while (Math.abs(p.getX() - originalX) > TRACK_WIDTH / 4 && Math.abs(p.getY() - originalY) > TRACK_WIDTH / 4);
 
         TestingPanel.objizdeni = 2;
     }
