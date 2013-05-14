@@ -1,6 +1,8 @@
 package rocnikovkapc;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lejos.geom.Point;
 import lejos.robotics.mapping.PCNavigationModel;
 import lejos.robotics.navigation.Pose;
@@ -10,12 +12,12 @@ import lejos.robotics.navigation.Waypoint;
  *
  * @author viky
  */
-public class ObstacleAvoider {
+public class ObstacleAvoider extends Thread{
 
     private final long STEP_LENGTH;
     private float originalX;
     private float originalY;
-    private final PCNavigationModel model;
+    private PCNavigationModel model;
 
     public ObstacleAvoider(long STEP_LENGTH, PCNavigationModel model) {
         this.STEP_LENGTH = STEP_LENGTH;
@@ -58,7 +60,8 @@ public class ObstacleAvoider {
         return 180 - heading;
     }
 
-    void bypass() {
+    @Override
+   public void run() {
         Pose p = model.getRobotPose();
         originalX = p.getX();
         originalY = p.getY();
@@ -83,14 +86,30 @@ public class ObstacleAvoider {
                         x -= STEP_LENGTH;
                         break;
                 }
-                model.goTo(new Waypoint(x, y, repairHeading(p.getHeading() + 90)));
+           Waypoint lol = new Waypoint(x, y, repairHeading(p.getHeading() + 90));
+                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
+                model.goTo(lol);
             } else {
-                model.goTo(avoid(p));
+                Waypoint lol = avoid(p);
+                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
+                model.goTo(lol);
             }
 
-            p = model.getRobotPose();
+            System.out.println("while("+Math.floor(model.getTarget().x) +"!="+ Math.floor(model.getRobotPose().getX()) +"||"+ Math.floor(model.getTarget().y) +"!="+ Math.floor(model.getRobotPose().getY())+")");
+            //dokud robot neni tam kam ho poslal avoid()
+            while (Math.floor(model.getTarget().x) != Math.floor(model.getRobotPose().getX()) || Math.floor(model.getTarget().y) != Math.floor(model.getRobotPose().getY())) {
+                System.out.println("cyklusuju");
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ObstacleAvoider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            System.out.println("robot je tam kam ho poslal avoid()");
+
             last = current;
             current = getLastFeature();
+            p = model.getRobotPose();
         } while (Math.abs(p.getX() - originalX) > STEP_LENGTH / 4 && Math.abs(p.getY() - originalY) > STEP_LENGTH / 4);
 
         TestingPanel.objizdeni = 2;

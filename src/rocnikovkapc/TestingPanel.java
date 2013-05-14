@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
@@ -138,7 +140,8 @@ public class TestingPanel extends NavigationPanel {
 //        System.out.println(navEvent.name());
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
             if (objizdeni == 2) {
-                obstacleAv = null;
+                obstacleAv.interrupt();
+                obstacleAv =null;
                 System.out.println("bypass skoncil");
                 objizdeni = 0;
             }
@@ -157,7 +160,7 @@ public class TestingPanel extends NavigationPanel {
 
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
             ArrayList<lejos.geom.Point> features = model.getFeatures();
-            
+
             float featureX = 0;
             float featureY = 0;
             for (lejos.geom.Point point : features) {
@@ -171,24 +174,24 @@ public class TestingPanel extends NavigationPanel {
                 System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
 
                 obstacleAv = new ObstacleAvoider(TRACK_WIDTH, model);
-//                obstacleAv.getLastFeature();
+                //obstacleAv.getLastFeature();
 //                zjistit kdy jsem moc blízko a objet prekazku 
                 if (featureX != 0 && featureY != 0) {
                     if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
                         System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
                         model.clearPath();
-                        obstacleAv.bypass();
+                        obstacleAv.start();
                     } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
                         System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
                         model.clearPath();
-                        obstacleAv.bypass();
+                        obstacleAv.start();
                     } else if (featureX < pozice.getX() + TRACK_WIDTH && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
                         System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                         objizdeni = 1;
                         model.clearPath();
-                        obstacleAv.bypass();
+                        obstacleAv.start();
                     }
                 }
 //            //kdyz objizdim faze 1 a prekazka mi stale prekazi
@@ -229,13 +232,71 @@ public class TestingPanel extends NavigationPanel {
     public void whenConnected() {
         super.whenConnected();
         model.setRotateSpeed(80);
-        model.setTravelSpeed(10);
+        model.setTravelSpeed(16);
         model.setPose(new Pose(TRACK_WIDTH / 2, TRACK_WIDTH / 2, 90)); // proste tak musi zacinat 
         model.goTo(wayGenerator.gnw(new Waypoint(model.getRobotPose())));
     }
 
     public lejos.geom.Point getLastFeature() {
         ArrayList<lejos.geom.Point> features = model.getFeatures();
-        return features.get(features.size() - 1);
+        lejos.geom.Point feature = features.get(features.size() - 1);
+        System.out.println("getLastFeature(): " + feature.x + "|" + feature.y);
+        return feature;
+    }
+
+    public NavigationModel getModel() {
+        return model;
+    }
+
+    private void bypassOld() {
+        Pose p = model.getRobotPose();
+        float originalX = p.getX();
+        float originalY = p.getY();
+        lejos.geom.Point last = getLastFeature();
+        lejos.geom.Point current = getLastFeature();
+        model.goTo(obstacleAv.avoid(p));
+        do {
+            if (last == current) {
+                float x = p.getX();
+                float y = p.getY();
+                switch (Math.round(obstacleAv.repairHeading(p.getHeading()))) {
+                    case 90:
+                        x += STEP_LENGTH;
+                        break;
+                    case 180:
+                        y += STEP_LENGTH;
+                        break;
+                    case 0:
+                        y -= STEP_LENGTH;
+                        break;
+                    case -90:
+                        x -= STEP_LENGTH;
+                        break;
+                }
+                Waypoint lol = new Waypoint(x, y, obstacleAv.repairHeading(p.getHeading() + 90));
+                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
+                model.goTo(lol);
+            } else {
+                Waypoint lol = obstacleAv.avoid(p);
+                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
+                model.goTo(lol);
+            }
+
+            while (model.getTarget() != new Waypoint(model.getRobotPose())) {//dokud robot neni tam kam ho poslal avoid()
+                System.out.println(model.getRobotPose().getX() + "|" + model.getRobotPose().getY() + " target:" + model.getTarget().x + "|" + model.getTarget().y);
+                try {
+                    Thread.sleep(600);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(ObstacleAvoider.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            System.out.println("robot je tam kam ho poslal avoid()");
+
+            last = current;
+            current = getLastFeature();
+            p = model.getRobotPose();
+        } while (Math.abs(p.getX() - originalX) > STEP_LENGTH / 4 && Math.abs(p.getY() - originalY) > STEP_LENGTH / 4);
+
+        TestingPanel.objizdeni = 2;
     }
 }
