@@ -149,15 +149,8 @@ public class TestingPanel extends NavigationPanel {
             if (objizdeni == 0) {
                 Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
                 model.goTo(nextWP);
-                System.out.println("Regular Waipoint "+nextWP.x+"|"+nextWP.y+"|"+nextWP.getHeading());
+                System.out.println("Regular Waipoint " + nextWP.x + "|" + nextWP.y + "|" + nextWP.getHeading());
             }
-//            if (objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
-//                ArrayList<lejos.geom.Point> features = model.getFeatures();
-//                model.goTo(obstacleAv.avoidF2(getLastFeature(), model.getRobotPose()));
-//                objizdeni = 2;
-//            }
-//            if (objizdeni == 3) { //robot uz je nad prekazkou, vraci se do puvodni drahy 
-//            }
         }
 
         if (navEvent == NavigationModel.NavEvent.FEATURE_DETECTED) {
@@ -197,35 +190,6 @@ public class TestingPanel extends NavigationPanel {
                             obstacleAv.start();
                         }
                     }
-//            //kdyz objizdim faze 1 a prekazka mi stale prekazi
-//            if (objizdeni == 1 && featureX != 0 && featureY != 0) {
-//                if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
-//                    System.out.println("1. Porad prekazi " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-//                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-//                } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
-//                    System.out.println("2. Porad prekazi " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
-//                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-//
-//                } else if (featureX < pozice.getX() + TRACK_WIDTH) {
-//                    System.out.println("3. Porad prekazi " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-//                    model.goTo(obstacleAv.avoidF1(new lejos.geom.Point(featureX, featureY), pozice));
-//                }
-//            }
-//
-//            //kdyz objizdim faze 2 a furt se nemuzu vratit
-//            if (objizdeni == 2 && featureX != 0 && featureY != 0) {
-//                if (featureX < pozice.getX() + TRACK_WIDTH && pozice.getHeading() == 180) {
-//                    System.out.println("1. F2 Porad prekazi " + featureX + " < " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-//                    model.goTo(obstacleAv.avoidF2(new lejos.geom.Point(featureX, featureY), pozice));
-//                } else if (featureX > pozice.getX() - TRACK_WIDTH && pozice.getHeading() == 0) {
-//                    System.out.println("2. F2 Porad prekazi " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
-//                    model.goTo(obstacleAv.avoidF2(new lejos.geom.Point(featureX, featureY), pozice));
-//
-//                } else if (featureX < pozice.getX() + TRACK_WIDTH) {
-//                    System.out.println("3. F2 Porad prekazi " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
-//                    model.goTo(obstacleAv.avoidF2(new lejos.geom.Point(featureX, featureY), pozice));
-//                }
-//            }
                     System.out.println("---");
                 }
             }
@@ -250,57 +214,5 @@ public class TestingPanel extends NavigationPanel {
 
     public NavigationModel getModel() {
         return model;
-    }
-
-    private void bypassOld() {
-        Pose p = model.getRobotPose();
-        float originalX = p.getX();
-        float originalY = p.getY();
-        lejos.geom.Point last = getLastFeature();
-        lejos.geom.Point current = getLastFeature();
-        model.goTo(obstacleAv.avoid(p));
-        do {
-            if (last == current) {
-                float x = p.getX();
-                float y = p.getY();
-                switch (Math.round(obstacleAv.repairHeading(p.getHeading()))) {
-                    case 90:
-                        x += STEP_LENGTH;
-                        break;
-                    case 180:
-                        y += STEP_LENGTH;
-                        break;
-                    case 0:
-                        y -= STEP_LENGTH;
-                        break;
-                    case -90:
-                        x -= STEP_LENGTH;
-                        break;
-                }
-                Waypoint lol = new Waypoint(x, y, obstacleAv.repairHeading(p.getHeading() + 90));
-                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
-                model.goTo(lol);
-            } else {
-                Waypoint lol = obstacleAv.avoid(p);
-                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
-                model.goTo(lol);
-            }
-
-            while (model.getTarget() != new Waypoint(model.getRobotPose())) {//dokud robot neni tam kam ho poslal avoid()
-                System.out.println(model.getRobotPose().getX() + "|" + model.getRobotPose().getY() + " target:" + model.getTarget().x + "|" + model.getTarget().y);
-                try {
-                    Thread.sleep(600);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(ObstacleAvoider.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            System.out.println("robot je tam kam ho poslal avoid()");
-
-            last = current;
-            current = getLastFeature();
-            p = model.getRobotPose();
-        } while (Math.abs(p.getX() - originalX) > STEP_LENGTH / 4 && Math.abs(p.getY() - originalY) > STEP_LENGTH / 4);
-
-        TestingPanel.objizdeni = 2;
     }
 }
