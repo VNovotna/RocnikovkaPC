@@ -103,9 +103,9 @@ public class ObstacleAvoider extends Thread {
             System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
             System.out.println("rozdily: " + cyklX + "|" + cyklY);
             //dokud robot neni tam kam ho poslal avoid()
-            while (cyklX > 1 || cyklY > 1) {
-                cyklX = Math.abs(Math.round(model.getTarget().x / model.getRobotPose().getX()));
-                cyklY = Math.abs(Math.round(model.getTarget().y / model.getRobotPose().getY()));
+            while (cyklX < 1 || cyklY < 1) {
+                cyklX = Math.abs((model.getTarget().x - model.getRobotPose().getX()));
+                cyklY = Math.abs((model.getTarget().y - model.getRobotPose().getY()));
                 System.out.print("cyklusuju: ");
                 System.out.println("rozdily: " + cyklX + "|" + cyklY);
                 try {
