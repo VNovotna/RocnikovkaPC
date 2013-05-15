@@ -86,7 +86,7 @@ public class ObstacleAvoider extends Thread {
                         x -= STEP_LENGTH;
                         break;
                 }
-                Waypoint lol = new Waypoint(x, y, repairHeading(p.getHeading() + 90));
+                Waypoint lol = new Waypoint(x, y);// repairHeading(p.getHeading() + 90));
                 System.out.println("last == current -> Jdu na: " + lol.x + "|" + lol.y);
                 model.goTo(lol);
             } else {
@@ -95,15 +95,16 @@ public class ObstacleAvoider extends Thread {
                 model.goTo(lol);
             }
 
-            System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
-            //dokud robot neni tam kam ho poslal avoid()
             float cyklX = Math.abs(Math.round(model.getTarget().x / model.getRobotPose().getX()));
             float cyklY = Math.abs(Math.round(model.getTarget().y / model.getRobotPose().getY()));
-            while (cyklX > 2 || cyklY > 2) {
+            System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
+            System.out.println("rozdily: " + cyklX + "|" + cyklY);
+            //dokud robot neni tam kam ho poslal avoid()
+            while (cyklX > 1 || cyklY > 1) {
                 cyklX = Math.abs(Math.round(model.getTarget().x / model.getRobotPose().getX()));
                 cyklY = Math.abs(Math.round(model.getTarget().y / model.getRobotPose().getY()));
                 System.out.print("cyklusuju: ");
-                System.out.println("rozdily: "+cyklX+"|"+cyklY);
+                System.out.println("rozdily: " + cyklX + "|" + cyklY);
                 try {
                     Thread.sleep(800);
                 } catch (InterruptedException ex) {

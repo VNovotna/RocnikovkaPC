@@ -42,7 +42,7 @@ public class TestingPanel extends NavigationPanel {
     private static WayGenerator wayGenerator;
     private static ObstacleAvoider obstacleAv;
     private static final long TRACK_WIDTH = 16; //sirka kol robota
-    private static final long STEP_LENGTH = 20; //vlastne presnost mereni
+    private static final long STEP_LENGTH = 10; //vlastne presnost mereni
     private static final long XRANGE = 110;
     private static final long YRANGE = 100;  //velikost mapovane oblasti
     public static int objizdeni = 0;
@@ -149,6 +149,7 @@ public class TestingPanel extends NavigationPanel {
             if (objizdeni == 0) {
                 Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
                 model.goTo(nextWP);
+                System.out.println("Regular Waipoint "+nextWP.x+"|"+nextWP.y+"|"+nextWP.getHeading());
             }
 //            if (objizdeni == 1) { //objizdim ale u nemam prekazku pred sebou
 //                ArrayList<lejos.geom.Point> features = model.getFeatures();
