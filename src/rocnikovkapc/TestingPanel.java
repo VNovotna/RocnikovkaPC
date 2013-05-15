@@ -27,7 +27,7 @@ import lejos.util.PilotProps;
  *
  * @author viki
  */
-public class TestingPanel extends NavigationPanel {
+public class TestingPanel extends NavigationPanel implements Runnable{
 
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
@@ -128,7 +128,8 @@ public class TestingPanel extends NavigationPanel {
         menu.add(new MenuAction(NavigationModel.NavEvent.SET_TARGET, "Set target", p, model, this));
     }
 
-    private void run() throws IOException {
+    @Override
+    public void run() {
         model.setDebug(true);
         model.connect("NXT");
         openInJFrame(this, WINDOW_WIDTH, WINDOW_HEIGHT, title, Color.LIGHT_GRAY, menuBar);

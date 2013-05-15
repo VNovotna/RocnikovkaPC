@@ -63,15 +63,18 @@ public class ObstacleAvoider extends Thread {
     @Override
     public void run() {
         Pose p = model.getRobotPose();
+        System.out.println("bypass start on: " + p.getX() + "|" + p.getY() + "|" + p.getHeading());
         originalX = p.getX();
         originalY = p.getY();
         Point last = getLastFeature();
         Point current = getLastFeature();
         model.goTo(avoid(p));
         do {
+            Waypoint nextWp;
             if (last == current) {
                 float x = p.getX();
                 float y = p.getY();
+                System.out.println("last == current ->      z: " + x + "|" + y);
                 switch (Math.round(repairHeading(p.getHeading()))) {
                     case 90:
                         x += STEP_LENGTH;
@@ -86,14 +89,14 @@ public class ObstacleAvoider extends Thread {
                         x -= STEP_LENGTH;
                         break;
                 }
-                Waypoint lol = new Waypoint(x, y);// repairHeading(p.getHeading() + 90));
-                System.out.println("last == current -> Jdu na: " + lol.x + "|" + lol.y);
-                model.goTo(lol);
+                nextWp = new Waypoint(x, y);// repairHeading(p.getHeading() + 90));
+                System.out.println("last == current -> Jdu na: " + nextWp.x + "|" + nextWp.y);
+
             } else {
-                Waypoint lol = avoid(p);
-                System.out.println("last != current -> Jdu na: " + lol.x + "|" + lol.y);
-                model.goTo(lol);
+                nextWp = avoid(p);
+                System.out.println("last != current -> Jdu na: " + nextWp.x + "|" + nextWp.y);
             }
+            model.goTo(nextWp);//neblokuje
 
             float cyklX = Math.abs(Math.round(model.getTarget().x / model.getRobotPose().getX()));
             float cyklY = Math.abs(Math.round(model.getTarget().y / model.getRobotPose().getY()));
@@ -117,7 +120,7 @@ public class ObstacleAvoider extends Thread {
             current = getLastFeature();
             p = model.getRobotPose();
         } while (Math.abs(p.getX() - originalX) > STEP_LENGTH / 4 && Math.abs(p.getY() - originalY) > STEP_LENGTH / 4);
-
+        System.out.println("bypass end on: " + p.getX() + "|" + p.getY() + "|" + p.getHeading());
         TestingPanel.objizdeni = 2;
     }
 
