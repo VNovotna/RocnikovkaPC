@@ -63,7 +63,7 @@ public class ObstacleAvoider extends Thread {
     @Override
     public void run() {
         Pose p = model.getRobotPose();
-        System.out.println("bypass start on: " + p.getX() + "|" + p.getY() + "|" + p.getHeading());
+        System.out.println("bypass START on: " + p.getX() + "|" + p.getY() + "|" + p.getHeading());
         originalX = p.getX();
         originalY = p.getY();
         Point last = getLastFeature();
@@ -98,8 +98,8 @@ public class ObstacleAvoider extends Thread {
             }
             model.goTo(nextWp);//neblokuje
 
-            float cyklX = Math.abs(Math.round(model.getTarget().x / model.getRobotPose().getX()));
-            float cyklY = Math.abs(Math.round(model.getTarget().y / model.getRobotPose().getY()));
+            float cyklX = Math.abs((model.getTarget().x - model.getRobotPose().getX()));
+            float cyklY = Math.abs((model.getTarget().y - model.getRobotPose().getY()));
             System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
             System.out.println("rozdily: " + cyklX + "|" + cyklY);
             //dokud robot neni tam kam ho poslal avoid()
@@ -120,7 +120,7 @@ public class ObstacleAvoider extends Thread {
             current = getLastFeature();
             p = model.getRobotPose();
         } while (Math.abs(p.getX() - originalX) > STEP_LENGTH / 4 && Math.abs(p.getY() - originalY) > STEP_LENGTH / 4);
-        System.out.println("bypass end on: " + p.getX() + "|" + p.getY() + "|" + p.getHeading());
+        System.out.println("bypass END on: " + p.getX() + "|" + p.getY() + "|" + p.getHeading());
         TestingPanel.objizdeni = 2;
     }
 
