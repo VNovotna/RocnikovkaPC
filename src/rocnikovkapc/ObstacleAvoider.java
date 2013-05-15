@@ -12,7 +12,7 @@ import lejos.robotics.navigation.Waypoint;
  *
  * @author viky
  */
-public class ObstacleAvoider extends Thread{
+public class ObstacleAvoider extends Thread {
 
     private final long STEP_LENGTH;
     private float originalX;
@@ -61,7 +61,7 @@ public class ObstacleAvoider extends Thread{
     }
 
     @Override
-   public void run() {
+    public void run() {
         Pose p = model.getRobotPose();
         originalX = p.getX();
         originalY = p.getY();
@@ -86,19 +86,24 @@ public class ObstacleAvoider extends Thread{
                         x -= STEP_LENGTH;
                         break;
                 }
-           Waypoint lol = new Waypoint(x, y, repairHeading(p.getHeading() + 90));
-                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
+                Waypoint lol = new Waypoint(x, y, repairHeading(p.getHeading() + 90));
+                System.out.println("last == current -> Jdu na: " + lol.x + "|" + lol.y);
                 model.goTo(lol);
             } else {
                 Waypoint lol = avoid(p);
-                System.out.println("Jdu na: " + lol.x + "|" + lol.y);
+                System.out.println("last != current -> Jdu na: " + lol.x + "|" + lol.y);
                 model.goTo(lol);
             }
 
-            System.out.println("while("+Math.floor(model.getTarget().x) +"!="+ Math.floor(model.getRobotPose().getX()) +"||"+ Math.floor(model.getTarget().y) +"!="+ Math.floor(model.getRobotPose().getY())+")");
+            System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
             //dokud robot neni tam kam ho poslal avoid()
-            while (Math.floor(model.getTarget().x) != Math.floor(model.getRobotPose().getX()) || Math.floor(model.getTarget().y) != Math.floor(model.getRobotPose().getY())) {
-                System.out.println("cyklusuju");
+            float cyklX = Math.abs(Math.round(model.getTarget().x / model.getRobotPose().getX()));
+            float cyklY = Math.abs(Math.round(model.getTarget().y / model.getRobotPose().getY()));
+            while (cyklX > 2 || cyklY > 2) {
+                cyklX = Math.abs(Math.round(model.getTarget().x / model.getRobotPose().getX()));
+                cyklY = Math.abs(Math.round(model.getTarget().y / model.getRobotPose().getY()));
+                System.out.print("cyklusuju: ");
+                System.out.println("rozdily: "+cyklX+"|"+cyklY);
                 try {
                     Thread.sleep(800);
                 } catch (InterruptedException ex) {

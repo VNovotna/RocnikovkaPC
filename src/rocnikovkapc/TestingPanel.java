@@ -44,7 +44,7 @@ public class TestingPanel extends NavigationPanel {
     private static final long TRACK_WIDTH = 16; //sirka kol robota
     private static final long STEP_LENGTH = 20; //vlastne presnost mereni
     private static final long XRANGE = 110;
-    private static final long YRANGE = 90;  //velikost mapovane oblasti
+    private static final long YRANGE = 100;  //velikost mapovane oblasti
     public static int objizdeni = 0;
 
     public static void main(String[] args) throws IOException {
