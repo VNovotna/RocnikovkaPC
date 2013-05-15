@@ -104,16 +104,16 @@ public class ObstacleAvoider extends Thread {
             System.out.println("rozdily: " + cyklX + "|" + cyklY);
             //dokud robot neni tam kam ho poslal avoid()
             while (cyklX > 1 && cyklY > 1) {
-                System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
-                cyklX = Math.abs((model.getTarget().x - model.getRobotPose().getX()));
-                cyklY = Math.abs((model.getTarget().y - model.getRobotPose().getY()));
-                System.out.print("cyklusuju: ");
-                System.out.println("rozdily: " + cyklX + "|" + cyklY);
                 try {
                     Thread.sleep(800);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ObstacleAvoider.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
+                cyklX = Math.abs((model.getTarget().x - model.getRobotPose().getX()));
+                cyklY = Math.abs((model.getTarget().y - model.getRobotPose().getY()));
+                System.out.print("cyklusuju: ");
+                System.out.println("rozdily: " + cyklX + "|" + cyklY);
             }
             System.out.println("robot je tam kam ho poslal avoid()");
 
