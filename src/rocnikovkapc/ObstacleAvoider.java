@@ -74,7 +74,7 @@ public class ObstacleAvoider extends Thread {
             if (last == current) {
                 float x = p.getX();
                 float y = p.getY();
-                System.out.println("last == current ->      z: " + x + "|" + y);
+                System.out.println("last == current -> Jdu  z: " + x + "|" + y);
                 switch (Math.round(repairHeading(p.getHeading()))) {
                     case 90:
                         x += STEP_LENGTH;
@@ -103,7 +103,7 @@ public class ObstacleAvoider extends Thread {
             System.out.println("while(" + Math.floor(model.getTarget().x) + "!=" + Math.floor(model.getRobotPose().getX()) + "||" + Math.floor(model.getTarget().y) + "!=" + Math.floor(model.getRobotPose().getY()) + ")");
             System.out.println("rozdily: " + cyklX + "|" + cyklY);
             //dokud robot neni tam kam ho poslal avoid()
-            while (cyklX > 1 || cyklY > 1) {
+            while (cyklX > 1 && cyklY > 1) {
                 cyklX = Math.abs((model.getTarget().x - model.getRobotPose().getX()));
                 cyklY = Math.abs((model.getTarget().y - model.getRobotPose().getY()));
                 System.out.print("cyklusuju: ");
