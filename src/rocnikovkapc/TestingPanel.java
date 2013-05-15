@@ -34,7 +34,7 @@ public class TestingPanel extends NavigationPanel {
     private static final Dimension MAP_SIZE = new Dimension(700, 600);
     private static final Point INITIAL_VIEW_START = new Point(0, -10);
     private static final int INITIAL_ZOOM = 160;
-    private JButton stopButton = new JButton("nigga halt!");
+    private JButton stopButton = new JButton("STOP!");
     private JTextArea logArea = new JTextArea("Tady běží logování \n", 35, 35);
     private JScrollPane log = new JScrollPane(logArea);
     private JButton clearButton = new JButton("Clear log");

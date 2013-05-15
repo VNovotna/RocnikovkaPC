@@ -100,7 +100,7 @@ public class ObstacleAvoider extends Thread{
             while (Math.floor(model.getTarget().x) != Math.floor(model.getRobotPose().getX()) || Math.floor(model.getTarget().y) != Math.floor(model.getRobotPose().getY())) {
                 System.out.println("cyklusuju");
                 try {
-                    Thread.sleep(400);
+                    Thread.sleep(800);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(ObstacleAvoider.class.getName()).log(Level.SEVERE, null, ex);
                 }
