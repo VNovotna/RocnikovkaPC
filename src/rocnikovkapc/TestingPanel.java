@@ -18,6 +18,7 @@ import lejos.robotics.mapping.MapPanel;
 import lejos.robotics.mapping.MenuAction;
 import lejos.robotics.mapping.NavigationModel;
 import lejos.robotics.mapping.NavigationPanel;
+import lejos.robotics.mapping.PCNavigationModel;
 import lejos.robotics.mapping.SliderPanel;
 import lejos.robotics.navigation.Pose;
 import lejos.robotics.navigation.Waypoint;
@@ -44,7 +45,7 @@ public class TestingPanel extends NavigationPanel implements Runnable{
     private static final long TRACK_WIDTH = 16; //sirka kol robota
     private static final long STEP_LENGTH = 10; //vlastne presnost mereni
     private static final long XRANGE = 110;
-    private static final long YRANGE = 100;  //velikost mapovane oblasti
+    private static final long YRANGE = 80;  //velikost mapovane oblasti
     public static int objizdeni = 0;
 
     public static void main(String[] args) throws IOException {
@@ -170,7 +171,7 @@ public class TestingPanel extends NavigationPanel implements Runnable{
                     Pose pozice = model.getRobotPose();
                     System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
 
-                    obstacleAv = new ObstacleAvoider(TRACK_WIDTH, model);
+                    obstacleAv = new ObstacleAvoider(TRACK_WIDTH, this);
                     //obstacleAv.getLastFeature();
 //                zjistit kdy jsem moc blízko a objet prekazku 
                     if (featureX != 0 && featureY != 0) {
@@ -213,7 +214,7 @@ public class TestingPanel extends NavigationPanel implements Runnable{
         return feature;
     }
 
-    public NavigationModel getModel() {
+    public PCNavigationModel getModel() {
         return model;
     }
 }
