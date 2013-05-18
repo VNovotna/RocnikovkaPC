@@ -29,7 +29,7 @@ import lejos.util.PilotProps;
  *
  * @author viki
  */
-public class TestingPanel extends NavigationPanel implements Runnable{
+public class TestingPanel extends NavigationPanel implements Runnable {
 
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
@@ -104,7 +104,6 @@ public class TestingPanel extends NavigationPanel implements Runnable{
 
         commandPanel.add(stopButton);
 
-        //Display mesh
         showMesh = true;
 
         log.setBorder(BorderFactory.createTitledBorder("Log"));
@@ -112,8 +111,6 @@ public class TestingPanel extends NavigationPanel implements Runnable{
         logPanel.add(clearButton);
         logPanel.setPreferredSize(new Dimension(400, 650));
         add(logPanel);
-
-//        createMenu();
     }
 
     @Override
@@ -140,19 +137,16 @@ public class TestingPanel extends NavigationPanel implements Runnable{
     @Override
     public void eventReceived(NavigationModel.NavEvent navEvent) {
         super.eventReceived(navEvent);
-//        System.out.println(navEvent.name());
         if (navEvent == NavigationModel.NavEvent.WAYPOINT_REACHED) {
             if (objizdeni == 2) {
                 obstacleAv.interrupt();
                 obstacleAv = null;
                 model.clearPath();
-                System.out.println("bypass skoncil");
                 objizdeni = 0;
             }
             if (objizdeni == 0) {
                 Waypoint nextWP = wayGenerator.gnw(new Waypoint(model.getRobotPose()));
                 model.goTo(nextWP);
-                System.out.println("Regular Waipoint " + nextWP.x + "|" + nextWP.y + "|" + nextWP.getHeading());
             }
         }
 
@@ -167,33 +161,25 @@ public class TestingPanel extends NavigationPanel implements Runnable{
             }
             if ((featureX < XRANGE && featureY < YRANGE) && (featureX > 0 && featureY > 0)) { //objekty mimo hledane pole nema cenu ani vypisovat 
                 if (objizdeni == 0) {
-                    System.out.println("FEATURE_DETECTED");
-                    System.out.println("prekazka: " + featureX + " | " + featureY);
                     Pose pozice = model.getRobotPose();
-                    System.out.println("robot:    " + pozice.getX() + " | " + pozice.getY());
 
                     obstacleAv = new ObstacleAvoider(TRACK_WIDTH, this);
-                    //obstacleAv.getLastFeature();
 //                zjistit kdy jsem moc blízko a objet prekazku 
                     if (featureX != 0 && featureY != 0) {
                         if (featureY < pozice.getY() + TRACK_WIDTH && pozice.getHeading() > 2) {
-                            System.out.println("1. Musim objet " + featureY + " < " + pozice.getY() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                             objizdeni = 1;
                             model.clearPath();
                             obstacleAv.start();
                         } else if (featureY > pozice.getY() - TRACK_WIDTH && pozice.getHeading() < -2) {
-                            System.out.println("2. Musim objet " + featureY + " > " + pozice.getY() + " - " + TRACK_WIDTH + " H: " + pozice.getHeading());
                             objizdeni = 1;
                             model.clearPath();
                             obstacleAv.start();
                         } else if (featureX < pozice.getX() + TRACK_WIDTH && (pozice.getHeading() >= -2 && pozice.getHeading() <= 2)) {
-                            System.out.println("3. Musim objet " + featureX + " > " + pozice.getX() + " + " + TRACK_WIDTH + " H: " + pozice.getHeading());
                             objizdeni = 1;
                             model.clearPath();
                             obstacleAv.start();
                         }
                     }
-                    System.out.println("---");
                 }
             }
         }
@@ -211,7 +197,6 @@ public class TestingPanel extends NavigationPanel implements Runnable{
     public lejos.geom.Point getLastFeature() {
         ArrayList<lejos.geom.Point> features = model.getFeatures();
         lejos.geom.Point feature = features.get(features.size() - 1);
-        System.out.println("getLastFeature(): " + feature.x + "|" + feature.y);
         return feature;
     }
 
