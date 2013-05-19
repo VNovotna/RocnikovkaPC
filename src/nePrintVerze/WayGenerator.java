@@ -1,6 +1,5 @@
 package nePrintVerze;
 
-import rocnikovkapc.*;
 import lejos.robotics.navigation.Waypoint;
 
 /**
